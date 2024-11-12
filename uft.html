@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Static Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 20px; }
+        #chat-box { width: 100%; max-width: 600px; border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; }
+        .message { margin-bottom: 10px; padding: 5px; border-bottom: 1px solid #ddd; }
+        .message span { font-weight: bold; color: #007bff; }
+        #message-form { margin-top: 20px; display: flex; gap: 10px; }
+        #message-form input[type="text"] { flex-grow: 1; padding: 8px; }
+        #message-form button { padding: 8px 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="chat-box">
+        <h2>Chat Messages</h2>
+        <div id="messages"></div>
+    </div>
+
+    <div id="message-form">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="text" id="message" placeholder="Type a message" required>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        // Load existing messages from local storage on page load
+        document.addEventListener('DOMContentLoaded', loadMessages);
+
+        // Function to load messages from local storage and display them
+        function loadMessages() {
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = '';  // Clear the container first
+            const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+
+            messages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.innerHTML = `<span>${msg.username}:</span> ${msg.message}`;
+                messagesContainer.appendChild(messageElement);
+            });
+
+            // Scroll to the bottom of the chat box
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Function to send a message
+        function sendMessage() {
+            const username = document.getElementById('username').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (username && message) {
+                const newMessage = { username, message };
+
+                // Retrieve existing messages, add the new message, and save back to local storage
+                const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+                messages.push(newMessage);
+                localStorage.setItem('chatMessages', JSON.stringify(messages));
+
+                // Clear the input fields and reload messages
+                document.getElementById('message').value = '';
+                loadMessages();
+            }
+        }
+    </script>
+</body>
+</html>
